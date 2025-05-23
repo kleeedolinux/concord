@@ -1,0 +1,62 @@
+<div class="max-w-2xl mx-auto">
+    <div class="bg-[#2f3136] p-6 rounded-lg">
+        <h1 class="text-2xl font-bold text-white mb-6">Perfil do Usuário</h1>
+        
+        <div class="space-y-6">
+            <div class="flex items-center space-x-4">
+                <div class="w-24 h-24 bg-[#5865f2] rounded-full flex items-center justify-center">
+                    <i class="fas fa-user text-4xl text-white"></i>
+                </div>
+                <div>
+                    <h2 class="text-xl font-semibold text-white"><%= user.username %></h2>
+                    <p class="text-[#b9bbbe]">ID: <%= user.id %></p>
+                </div>
+            </div>
+
+            <div class="border-t border-[#40444b] pt-4">
+                <h3 class="text-lg font-semibold text-white mb-4">Alterar Nome de Usuário</h3>
+                <form action="/profile/username" method="POST" class="space-y-4">
+                    <div>
+                        <input type="text" name="username" value="<%= user.username %>" required
+                            class="w-full bg-[#40444b] text-white rounded px-4 py-2 focus:outline-none focus:ring-2 focus:ring-[#5865f2]">
+                    </div>
+                    <button type="submit" class="bg-[#5865f2] hover:bg-[#4752c4] px-4 py-2 rounded text-white">
+                        Atualizar Nome
+                    </button>
+                </form>
+            </div>
+
+            <div class="border-t border-[#40444b] pt-4">
+                <h3 class="text-lg font-semibold text-white mb-4">Informações</h3>
+                <div class="space-y-3">
+                    <div class="flex justify-between items-center p-2 rounded hover:bg-[#36393f]">
+                        <span class="text-[#b9bbbe]">Email</span>
+                        <span class="text-white">usuario@exemplo.com</span>
+                    </div>
+                    <div class="flex justify-between items-center p-2 rounded hover:bg-[#36393f]">
+                        <span class="text-[#b9bbbe]">Membro desde</span>
+                        <span class="text-white">Janeiro 2025</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="border-t border-[#40444b] pt-4">
+                <h3 class="text-lg font-semibold text-white mb-4">Estatísticas</h3>
+                <div class="grid grid-cols-3 gap-4">
+                    <div class="bg-[#36393f] p-4 rounded-lg text-center">
+                        <div class="text-2xl font-bold text-white">0</div>
+                        <div class="text-[#b9bbbe]">Mensagens</div>
+                    </div>
+                    <div class="bg-[#36393f] p-4 rounded-lg text-center">
+                        <div class="text-2xl font-bold text-white">0</div>
+                        <div class="text-[#b9bbbe]">Canais</div>
+                    </div>
+                    <div class="bg-[#36393f] p-4 rounded-lg text-center">
+                        <div class="text-2xl font-bold text-white">0</div>
+                        <div class="text-[#b9bbbe]">Amigos</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div> 

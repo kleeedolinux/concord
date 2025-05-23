@@ -1,0 +1,31 @@
+<div class="max-w-2xl mx-auto">
+    <div class="bg-[#2f3136] p-6 rounded-lg">
+        <div class="text-center mb-8">
+            <h1 class="text-2xl font-bold text-white mb-2">Criar Novo Servidor</h1>
+            <p class="text-[#b9bbbe]">Dê um nome ao seu servidor e personalize-o</p>
+        </div>
+        
+        <form action="/servers" method="POST" class="space-y-6">
+            <div>
+                <label for="name" class="block text-sm font-medium text-[#b9bbbe] mb-2">Nome do Servidor</label>
+                <input type="text" id="name" name="name" required
+                    class="w-full bg-[#40444b] text-white rounded px-4 py-2 focus:outline-none focus:ring-2 focus:ring-[#5865f2]"
+                    placeholder="Digite o nome do servidor">
+            </div>
+
+            <div>
+                <label for="description" class="block text-sm font-medium text-[#b9bbbe] mb-2">Descrição</label>
+                <textarea id="description" name="description" rows="3"
+                    class="w-full bg-[#40444b] text-white rounded px-4 py-2 focus:outline-none focus:ring-2 focus:ring-[#5865f2]"
+                    placeholder="Descreva seu servidor (opcional)"></textarea>
+            </div>
+
+            <div class="pt-4">
+                <button type="submit" 
+                    class="w-full bg-[#5865f2] hover:bg-[#4752c4] px-4 py-2 rounded text-white font-medium">
+                    Criar Servidor
+                </button>
+            </div>
+        </form>
+    </div>
+</div> 

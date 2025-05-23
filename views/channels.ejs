@@ -1,0 +1,76 @@
+<div class="max-w-6xl mx-auto">
+    <div class="grid grid-cols-12 gap-4">
+        <div class="col-span-3 bg-gray-800 p-4 rounded-lg">
+            <h2 class="text-xl font-semibold mb-4">Canais</h2>
+            <ul class="space-y-2">
+                <li class="flex items-center space-x-2">
+                    <i class="fas fa-hashtag text-gray-400"></i>
+                    <a href="#" class="hover:text-blue-400 channel-link" data-channel="geral">geral</a>
+                </li>
+                <li class="flex items-center space-x-2">
+                    <i class="fas fa-hashtag text-gray-400"></i>
+                    <a href="#" class="hover:text-blue-400 channel-link" data-channel="aleatorio">aleatório</a>
+                </li>
+            </ul>
+        </div>
+
+        <div class="col-span-9 bg-gray-800 p-4 rounded-lg">
+            <div id="chat-messages" class="h-96 overflow-y-auto mb-4 space-y-4">
+            </div>
+
+            <form id="message-form" class="flex space-x-2">
+                <input type="text" id="message-input" 
+                    class="flex-1 bg-gray-700 rounded px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    placeholder="Digite sua mensagem...">
+                <button type="submit" 
+                    class="bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded">
+                    <i class="fas fa-paper-plane"></i>
+                </button>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+    const socket = io();
+    const messageForm = document.getElementById('message-form');
+    const messageInput = document.getElementById('message-input');
+    const chatMessages = document.getElementById('chat-messages');
+    let currentChannel = 'geral';
+
+    messageForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+        const message = messageInput.value.trim();
+        if (message) {
+            socket.emit('message', {
+                channel: currentChannel,
+                text: message,
+                user: 'Usuário' 
+            });
+            messageInput.value = '';
+        }
+    });
+
+    socket.on('message', (data) => {
+        if (data.channel === currentChannel) {
+            const messageElement = document.createElement('div');
+            messageElement.className = 'bg-gray-700 p-3 rounded';
+            messageElement.innerHTML = `
+                <div class="font-semibold">${data.user}</div>
+                <div class="text-gray-300">${data.text}</div>
+            `;
+            chatMessages.appendChild(messageElement);
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+    });
+
+    document.querySelectorAll('.channel-link').forEach(link => {
+        link.addEventListener('click', (e) => {
+            e.preventDefault();
+            currentChannel = e.target.dataset.channel;
+            chatMessages.innerHTML = '';
+            document.querySelectorAll('.channel-link').forEach(l => l.classList.remove('text-blue-400'));
+            e.target.classList.add('text-blue-400');
+        });
+    });
+</script> 

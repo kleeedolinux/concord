@@ -1,0 +1,65 @@
+<div class="max-w-4xl mx-auto">
+    <div class="flex justify-between items-center mb-8">
+        <div>
+            <h1 class="text-3xl font-bold text-white mb-2">Bem-vindo ao Concord</h1>
+            <p class="text-[#b9bbbe]">Seu lugar para conversar e se conectar</p>
+        </div>
+        <a href="/servers/new" class="bg-[#5865f2] hover:bg-[#4752c4] px-4 py-2 rounded text-white flex items-center">
+            <i class="fas fa-plus mr-2"></i>Criar Servidor
+        </a>
+    </div>
+    
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div class="bg-[#2f3136] p-6 rounded-lg">
+            <h2 class="text-xl font-semibold text-white mb-4">Seus Servidores</h2>
+            <% if (servers && servers.length > 0) { %>
+                <ul class="space-y-2">
+                    <% servers.forEach(server => { %>
+                        <li class="flex items-center space-x-3 p-2 rounded hover:bg-[#36393f] transition-colors">
+                            <div class="w-10 h-10 bg-[#5865f2] rounded-full flex items-center justify-center">
+                                <i class="fas fa-server text-white"></i>
+                            </div>
+                            <div>
+                                <a href="/servers/<%= server.id %>" class="text-white hover:underline">
+                                    <%= server.name %>
+                                </a>
+                                <p class="text-sm text-[#b9bbbe]"><%= server.channels.length %> canais</p>
+                            </div>
+                        </li>
+                    <% }); %>
+                </ul>
+            <% } else { %>
+                <div class="text-center py-8">
+                    <div class="w-16 h-16 bg-[#36393f] rounded-full flex items-center justify-center mx-auto mb-4">
+                        <i class="fas fa-server text-2xl text-[#b9bbbe]"></i>
+                    </div>
+                    <p class="text-[#b9bbbe] mb-4">Você ainda não está em nenhum servidor.</p>
+                    <a href="/servers/new" class="inline-block bg-[#5865f2] hover:bg-[#4752c4] px-4 py-2 rounded text-white">
+                        Criar Primeiro Servidor
+                    </a>
+                </div>
+            <% } %>
+        </div>
+
+        <div class="bg-[#2f3136] p-6 rounded-lg">
+            <h2 class="text-xl font-semibold text-white mb-4">Começar a Conversar</h2>
+            <div class="space-y-4">
+                <div class="bg-[#36393f] p-4 rounded-lg">
+                    <h3 class="text-lg font-medium text-white mb-2">Crie seu próprio servidor</h3>
+                    <p class="text-[#b9bbbe] mb-4">Crie um servidor para você e seus amigos!</p>
+                    <a href="/servers/new" class="inline-block bg-[#5865f2] hover:bg-[#4752c4] px-4 py-2 rounded text-white">
+                        Criar Servidor
+                    </a>
+                </div>
+                
+                <div class="bg-[#36393f] p-4 rounded-lg">
+                    <h3 class="text-lg font-medium text-white mb-2">Personalize seu perfil</h3>
+                    <p class="text-[#b9bbbe] mb-4">Configure seu nome de usuário e avatar!</p>
+                    <a href="/profile" class="inline-block bg-[#36393f] hover:bg-[#40444b] px-4 py-2 rounded text-white">
+                        Configurar Perfil
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div> 

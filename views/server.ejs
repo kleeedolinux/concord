@@ -1,0 +1,188 @@
+<div class="flex flex-col md:flex-row h-[calc(100vh-48px)]">
+    <!-- Channel List -->
+    <div class="w-full md:w-72 bg-[#2f3136] flex flex-col min-h-0">
+        <div class="p-4 border-b border-[#202225] flex-shrink-0">
+            <h2 class="text-xl font-semibold text-white truncate"><%= server.name %></h2>
+        </div>
+        
+        <div class="flex-1 overflow-y-auto scrollbar-hide min-h-0">
+            <div class="p-3">
+                <div class="flex items-center justify-between px-3 mb-2">
+                    <span class="text-sm font-semibold text-[#8e9297] uppercase tracking-wide">Canais de Texto</span>
+                    <button id="showChannelForm" class="text-[#8e9297] hover:text-white p-2 rounded hover:bg-[#40444b] transition-colors">
+                        <i class="fas fa-plus"></i>
+                    </button>
+                </div>
+
+                <div id="new-channel-form" class="hidden mb-3 p-3 bg-[#202225] rounded-lg">
+                    <form action="/servers/<%= server.id %>/channels" method="POST" class="space-y-3">
+                        <div>
+                            <label class="block text-sm font-medium text-[#b9bbbe] mb-1">Nome do Canal</label>
+                            <input type="text" name="name" placeholder="ex: geral" required
+                                class="w-full bg-[#40444b] text-white rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#5865f2]">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-[#b9bbbe] mb-1">Descrição</label>
+                            <input type="text" name="description" placeholder="Descreva o propósito do canal"
+                                class="w-full bg-[#40444b] text-white rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#5865f2]">
+                        </div>
+                        <button type="submit" class="w-full bg-[#5865f2] hover:bg-[#4752c4] px-3 py-2 rounded text-sm font-medium transition-colors">
+                            Criar Canal
+                        </button>
+                    </form>
+                </div>
+
+                <ul class="space-y-1">
+                    <% server.channels.forEach(channel => { %>
+                        <li>
+                            <a href="#" class="channel-link flex items-center px-3 py-2 rounded hover:bg-[#40444b] group transition-colors" 
+                               data-channel="<%= channel.id %>">
+                                <i class="fas fa-hashtag text-[#8e9297] group-hover:text-white mr-2 flex-shrink-0"></i>
+                                <span class="text-[#8e9297] group-hover:text-white truncate text-sm"><%= channel.name %></span>
+                                <% if (channel.description) { %>
+                                    <span class="ml-2 text-xs text-[#8e9297] truncate hidden group-hover:inline">
+                                        <%= channel.description %>
+                                    </span>
+                                <% } %>
+                            </a>
+                        </li>
+                    <% }); %>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- Chat Area -->
+    <div class="flex-1 flex flex-col bg-[#36393f] min-h-0">
+        <div id="chat-messages" class="flex-1 overflow-y-auto scrollbar-hide p-4 space-y-4 min-h-0">
+        </div>
+
+        <div class="p-4 flex-shrink-0">
+            <form id="message-form" class="flex items-center space-x-2 bg-[#40444b] rounded-lg px-4">
+                <button type="button" class="text-[#8e9297] hover:text-white p-2 rounded hover:bg-[#36393f] transition-colors">
+                    <i class="fas fa-plus-circle"></i>
+                </button>
+                <input type="text" id="message-input" 
+                    class="flex-1 bg-transparent py-3 focus:outline-none text-white text-sm"
+                    placeholder="Enviar mensagem para #<%= server.channels[0]?.name || 'geral' %>">
+                <button type="submit" class="text-[#8e9297] hover:text-white p-2 rounded hover:bg-[#36393f] transition-colors">
+                    <i class="fas fa-paper-plane"></i>
+                </button>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+    $(document).ready(function() {
+        const socket = io();
+        let currentChannel = null;
+        const userId = Number('<%= user.id %>');
+        const $messageForm = $('#message-form');
+        const $messageInput = $('#message-input');
+        const $chatMessages = $('#chat-messages');
+        const $newChannelForm = $('#new-channel-form');
+
+        
+        function toggleChannelList() {
+            $('.channel-list').toggleClass('hidden md:flex');
+        }
+
+        $('#showChannelForm').on('click', function() {
+            $newChannelForm.toggleClass('hidden');
+        });
+
+        function loadMessages(channelId) {
+            $.get(`/api/channels/${channelId}/messages`, function(messages) {
+                $chatMessages.empty();
+                messages.forEach(function(message) {
+                    const messageHtml = `
+                        <div class="flex items-start space-x-3">
+                            <div class="w-10 h-10 bg-[#5865f2] rounded-full flex items-center justify-center flex-shrink-0">
+                                <i class="fas fa-user text-white"></i>
+                            </div>
+                            <div class="flex-1 min-w-0">
+                                <div class="flex items-baseline space-x-2">
+                                    <span class="font-semibold text-white">${message.user.username}</span>
+                                    <span class="text-xs text-[#8e9297]">${new Date(message.createdAt).toLocaleTimeString()}</span>
+                                </div>
+                                <div class="text-[#dcddde] whitespace-pre-wrap break-words">${message.content}</div>
+                            </div>
+                        </div>
+                    `;
+                    $chatMessages.append(messageHtml);
+                });
+                $chatMessages.scrollTop($chatMessages[0].scrollHeight);
+            });
+        }
+
+        $messageForm.on('submit', function(e) {
+            e.preventDefault();
+            const message = $messageInput.val().trim();
+            if (message && currentChannel) {
+                socket.emit('message', {
+                    text: message,
+                    channelId: Number(currentChannel),
+                    userId: userId
+                });
+                $messageInput.val('');
+            }
+        });
+
+        socket.on('message', function(data) {
+            if (data.channelId === Number(currentChannel)) {
+                const messageHtml = `
+                    <div class="flex items-start space-x-3">
+                        <div class="w-10 h-10 bg-[#5865f2] rounded-full flex items-center justify-center flex-shrink-0">
+                            <i class="fas fa-user text-white"></i>
+                        </div>
+                        <div class="flex-1 min-w-0">
+                            <div class="flex items-baseline space-x-2">
+                                <span class="font-semibold text-white">${data.user}</span>
+                                <span class="text-xs text-[#8e9297]">${new Date().toLocaleTimeString()}</span>
+                            </div>
+                            <div class="text-[#dcddde] whitespace-pre-wrap break-words">${data.content}</div>
+                        </div>
+                    </div>
+                `;
+                $chatMessages.append(messageHtml);
+                $chatMessages.scrollTop($chatMessages[0].scrollHeight);
+            }
+        });
+
+        $('.channel-link').on('click', function(e) {
+            e.preventDefault();
+            const channelId = $(this).data('channel');
+            
+            if (currentChannel) {
+                socket.emit('leave-channel', { channel: currentChannel });
+            }
+            
+            currentChannel = channelId;
+            socket.emit('join-channel', { channel: channelId });
+            
+            loadMessages(channelId);
+            
+            $('.channel-link').removeClass('bg-[#40444b]');
+            $(this).addClass('bg-[#40444b]');
+
+            
+            if (window.innerWidth < 768) {
+                toggleChannelList();
+            }
+        });
+
+        
+        const $firstChannel = $('.channel-link').first();
+        if ($firstChannel.length) {
+            $firstChannel.click();
+        }
+
+        
+        $(window).on('resize', function() {
+            if (window.innerWidth >= 768) {
+                $('.channel-list').removeClass('hidden');
+            }
+        });
+    });
+</script> 
